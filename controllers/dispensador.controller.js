@@ -1,5 +1,7 @@
 // controllers/dispensador.controller.js
+const mongoose = require('mongoose');
 const Dispensador = require('../models/dispensador.model');
+const Configuracion = require('../models/configuracion.model');
 
 // Obtener todos los dispensadores
 exports.obtenerDispensadores = async (req, res) => {
@@ -73,3 +75,35 @@ exports.eliminarDispensador = async (req, res) => {
   }
 };
 
+exports.asignarConfiguracionADispensador = async (req, res) => {
+  try {
+    const { dispensadorId, configuracionId } = req.params;
+
+    // Validar si los IDs son válidos
+    if (!mongoose.Types.ObjectId.isValid(dispensadorId) || !mongoose.Types.ObjectId.isValid(configuracionId)) {
+      return res.status(400).json({ mensaje: 'ID de dispensador o configuracion no válido' });
+    }
+
+    // Verificar si el dispensador existe
+    const dispensador = await Dispensador.findById(dispensadorId);
+    if (!dispensador) return res.status(404).json({ mensaje: 'Dispensador no encontrado' });
+
+    // Verificar si la configuracion existe
+    const configuracion = await Configuracion.findById(configuracionId);
+    if (!configuracion) return res.status(404).json({ mensaje: 'Configuracion no encontrada' });
+
+    // Verificar si el dispensador ya tiene esta configuración
+    if (dispensador.configuracion && dispensador.configuracion.toString() === configuracionId) {
+      return res.status(400).json({ mensaje: 'El dispensador ya tiene esta configuracion' });
+    }
+
+    // Asignar la configuración al dispensador
+    dispensador.configuracion = configuracionId;
+    await dispensador.save();
+
+    // Devolver la respuesta con el dispensador actualizado
+    res.status(200).json({ mensaje: 'Configuracion asignada a Dispensador', dispensador });
+  } catch (error) {
+    res.status(500).json({ mensaje: 'Error al asignar configuracion', error: error.message });
+  }
+};

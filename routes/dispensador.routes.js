@@ -16,9 +16,6 @@ const dispensadorController = require('../controllers/dispensador.controller');
  *     Dispensador:
  *       type: object
  *       properties:
- *         id_dispensador:
- *           type: string
- *           description: ID único del dispensador
  *         ubicacion:
  *           type: string
  *           description: Ubicación del dispensador
@@ -121,5 +118,30 @@ router.put('/:id', dispensadorController.actualizarDispensador);
  *         description: Error en el servidor
  */
 router.delete('/:id', dispensadorController.eliminarDispensador);
+
+/**
+ * @swagger
+ * /api/dispensadores/{dispensadorId}/asignar-configuracion/{configuracionId}:
+ *   post:
+ *     tags: [Dispensadores]
+ *     summary: Asigna una configuracion a un dispensador
+ *     parameters:
+ *       - name: dispensadorId
+ *         in: path
+ *         required: true
+ *         description: ID del dispensador
+ *       - name: configuracionId
+ *         in: path
+ *         required: true
+ *         description: ID de configuracion
+ *     responses:
+ *       200:
+ *         description: Configuracion asignado correctamente
+ *       404:
+ *         description: Dispensador o Configuracion no encontrados
+ *       500:
+ *         description: Error en el servidor
+ */
+router.post('/:dispensadorId/asignar-configuracion/:configuracionId', dispensadorController.asignarConfiguracionADispensador);
 
 module.exports = router;

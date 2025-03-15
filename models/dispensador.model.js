@@ -1,12 +1,6 @@
 const mongoose = require('mongoose');
 
 const dispensadorSchema = new mongoose.Schema({
-  id_dispensador: {
-    type: String,
-    required: true,
-    unique: true,
-    trim: true,
-  },
   ubicacion: {
     type: String,
     required: true,
@@ -20,6 +14,11 @@ const dispensadorSchema = new mongoose.Schema({
   usuario: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'Usuario', // Relación con Usuario
+    default: null,
+  },
+  configuracion: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'Configuracion', // Relación con Configuración
     default: null,
   },
 }, { timestamps: true });

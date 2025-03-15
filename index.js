@@ -9,6 +9,7 @@ const swaggerUi = require('swagger-ui-express');
 const usuarioRoutes = require('./routes/usuario.routes');
 const mascotaRoutes = require('./routes/mascota.routes');
 const dispensadorRoutes = require('./routes/dispensador.routes');
+const configuracionRouter = require('./routes/configuracion.routes');
 
 const app = express();
 app.use(cors());
@@ -27,6 +28,7 @@ app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocs));
 app.use('/api/usuarios', usuarioRoutes);
 app.use('/api/mascotas', mascotaRoutes);
 app.use('/api/dispensadores', dispensadorRoutes);
+app.use('/api/configuraciones', configuracionRouter);
 
 // Documentación con Swagger
 swaggerDocs(app);
