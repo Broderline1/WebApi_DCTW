@@ -101,8 +101,12 @@ exports.asignarConfiguracionADispensador = async (req, res) => {
     dispensador.configuracion = configuracionId;
     await dispensador.save();
 
-    // Devolver la respuesta con el dispensador actualizado
-    res.status(200).json({ mensaje: 'Configuracion asignada a Dispensador', dispensador });
+    // Asignar el dispensador a la configuración
+    configuracion.dispensador = dispensadorId;
+    await configuracion.save();
+
+    // Devolver la respuesta con ambos objetos actualizados
+    res.status(200).json({ mensaje: 'Configuracion asignada a Dispensador', dispensador, configuracion });
   } catch (error) {
     res.status(500).json({ mensaje: 'Error al asignar configuracion', error: error.message });
   }

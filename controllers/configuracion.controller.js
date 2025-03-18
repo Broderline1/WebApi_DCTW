@@ -12,7 +12,7 @@ exports.createConfiguracion = async (req, res) => {
       return res.status(400).send({ error: 'El id_dispensador no es un ObjectId válido' });
     }
 
-    res.status(201).send(nuevaConfiguracion);
+    res.status(201).send({mensaje: 'Configuracion creado', configuracion: nuevaConfiguracion});
   } catch (error) {
     res.status(400).send(error);
   }
@@ -22,6 +22,9 @@ exports.createConfiguracion = async (req, res) => {
 exports.getConfiguraciones = async (req, res) => {
   try {
     const configuraciones = await Configuracion.find().populate('id_dispensador');
+    if (configuraciones.length === 0) {
+      return res.status(404).json({ message: 'No se encontraron configuraciones' });
+    }
     res.status(200).send(configuraciones);
   } catch (error) {
     res.status(500).send(error);

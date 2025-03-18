@@ -6,7 +6,7 @@ const options = {
     openapi: '3.0.0',
     info: {
       title: 'API de Dispensador de Comida',
-      version: '1.0.0',
+      version: '1.0.5',
       description: 'Documentación de la API del Dispensador de Comida para Mascotas',
     },
     servers: [
