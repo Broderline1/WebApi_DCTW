@@ -5,6 +5,7 @@ const Dispensador = require('../models/dispensador.model');
 exports.createConfiguracion = async (req, res) => {
   try {
     const nuevaConfiguracion = new Configuracion(req.body);
+    console.log(nuevaConfiguracion);
     await nuevaConfiguracion.save();
 
     // Si se proporciona un id_dispensador, validar que sea un ObjectId válido

@@ -10,6 +10,7 @@ const usuarioRoutes = require('./routes/usuario.routes');
 const mascotaRoutes = require('./routes/mascota.routes');
 const dispensadorRoutes = require('./routes/dispensador.routes');
 const configuracionRouter = require('./routes/configuracion.routes');
+const servoRoutes = require('./routes/servo.routes'); // Agrega esta línea
 
 const app = express();
 app.use(cors());
@@ -29,7 +30,7 @@ app.use('/api/usuarios', usuarioRoutes);
 app.use('/api/mascotas', mascotaRoutes);
 app.use('/api/dispensadores', dispensadorRoutes);
 app.use('/api/configuraciones', configuracionRouter);
-
+app.use('/api/servo', servoRoutes); // Agrega esta línea
 // Documentación con Swagger
 swaggerDocs(app);
 

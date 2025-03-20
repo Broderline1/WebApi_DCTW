@@ -20,6 +20,7 @@ const dispensadorSchema = new mongoose.Schema({
     type: mongoose.Schema.Types.ObjectId,
     ref: 'Configuracion', // Relación con Configuración
     default: null,
+    require: false
   },
 }, { timestamps: true });
 
