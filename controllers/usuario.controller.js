@@ -2,28 +2,28 @@ const mongoose = require('mongoose');
 const Usuario = require('../models/usuario.model');
 const Mascota = require('../models/mascota.model');
 const Dispensador = require('../models/dispensador.model');
-const { encriptarPassword } = require('../middleware/encriptar');
 
 // Obtener todos los usuarios
-exports.obtenerUsuarios = async (req, res) => {
+exports.obtenerUsuarios = [ async (req, res) => {
   try {
     const usuarios = await Usuario.find();
     res.status(200).json(usuarios);
   } catch (error) {
     res.status(500).json({ mensaje: 'Error al obtener usuarios', error });
   }
-};
+}];
 
-// Crear un nuevo usuario con contraseña encriptada
-exports.crearUsuario = async (req, res) => {
+exports.obtenerUsuario = async (req, res) => {
   try {
-    const { nombre, correo, contraseña, telefono } = req.body;
-    const hashPassword = await encriptarPassword(contraseña);
-    const nuevoUsuario = new Usuario({ nombre, correo, contraseña: hashPassword, telefono });
-    await nuevoUsuario.save();
-    res.status(201).json({ mensaje: 'Usuario creado exitosamente', nuevoUsuario });
+    const usuario = await Usuario.findById(req.params.id)
+      .populate('dispensadores')
+      .populate('mascotas');
+    if (!usuario) {
+      return res.status(404).json({ mensaje: 'Usuario no encontrado' });
+    }
+    res.status(200).json(usuario);
   } catch (error) {
-    res.status(500).json({ mensaje: 'Error al crear usuario', error });
+    res.status(500).json({ mensaje: 'Error al obtener usuario', error });
   }
 };
 

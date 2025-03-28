@@ -1,28 +1,10 @@
+const mongoose = require('mongoose');
 const Configuracion = require('../models/configuracion.model');
-const Dispensador = require('../models/dispensador.model');
+const Dispensador = require('../models/dispensador.model'); // Asegúrate de importar el modelo de Dispensador
 
-// Crear una nueva configuración
-exports.createConfiguracion = async (req, res) => {
-  try {
-    const nuevaConfiguracion = new Configuracion(req.body);
-    console.log(nuevaConfiguracion);
-    await nuevaConfiguracion.save();
-
-    // Si se proporciona un id_dispensador, validar que sea un ObjectId válido
-    if (req.body.id_dispensador && !mongoose.Types.ObjectId.isValid(req.body.id_dispensador)) {
-      return res.status(400).send({ error: 'El id_dispensador no es un ObjectId válido' });
-    }
-
-    res.status(201).send({mensaje: 'Configuracion creado', configuracion: nuevaConfiguracion});
-  } catch (error) {
-    res.status(400).send(error);
-  }
-};
-
-// Obtener todas las configuraciones
 exports.getConfiguraciones = async (req, res) => {
   try {
-    const configuraciones = await Configuracion.find().populate('id_dispensador');
+    const configuraciones = await Configuracion.find().populate('dispensador');
     if (configuraciones.length === 0) {
       return res.status(404).json({ message: 'No se encontraron configuraciones' });
     }
@@ -32,43 +14,89 @@ exports.getConfiguraciones = async (req, res) => {
   }
 };
 
-// Obtener una configuración por ID
-exports.getConfiguracionById = async (req, res) => {
+exports.createConfiguracion = async (req, res) => {
   try {
-    const configuracion = await Configuracion.findById(req.params.id).populate('id_dispensador');
-    if (!configuracion) {
-      return res.status(404).send();
+    const { horarios, cantidad_porcion, modo_manual, dispensador } = req.body;
+
+    // Validar si dispensador es un ObjectId válido
+    const isValidObjectId = mongoose.Types.ObjectId.isValid(dispensador);
+    const dispensadorId = isValidObjectId ? dispensador : null;
+
+    // Validar si el dispensador ya tiene una configuración asignada
+    if (dispensadorId) {
+      const configuracionExistente = await Configuracion.findOne({ dispensador: dispensadorId });
+      if (configuracionExistente) {
+        return res.status(400).json({ mensaje: 'Este dispensador ya tiene una configuración asignada.' });
+      }
     }
-    res.status(200).send(configuracion);
+
+    const nuevaConfiguracion = new Configuracion({
+      horarios,
+      cantidad_porcion,
+      modo_manual,
+      dispensador: dispensadorId,
+    });
+
+    await nuevaConfiguracion.save();
+
+    // Actualizar el dispensador con la nueva configuración
+    if (dispensadorId) {
+      await Dispensador.findByIdAndUpdate(dispensadorId, { configuracion: nuevaConfiguracion._id });
+    }
+
+    res.status(201).send({ mensaje: 'Configuración creada', configuracion: nuevaConfiguracion });
   } catch (error) {
-    res.status(500).send(error);
+    res.status(400).send(error);
   }
 };
 
-// Actualizar una configuración por ID
 exports.updateConfiguracion = async (req, res) => {
   try {
-    // Validar que el id_dispensador sea un ObjectId válido
-    if (req.body.id_dispensador && !mongoose.Types.ObjectId.isValid(req.body.id_dispensador)) {
-      return res.status(400).send({ error: 'El id_dispensador no es un ObjectId válido' });
+    const { horarios, cantidad_porcion, modo_manual, dispensador } = req.body;
+
+    // Validar si dispensador es un ObjectId válido
+    const isValidObjectId = mongoose.Types.ObjectId.isValid(dispensador);
+    const dispensadorId = isValidObjectId ? dispensador : null;
+
+    // Validar si el dispensador ya tiene una configuración asignada
+    if (dispensadorId) {
+      const configuracionExistente = await Configuracion.findOne({ dispensador: dispensadorId, _id: { $ne: req.params.id } });
+      if (configuracionExistente) {
+        return res.status(400).json({ mensaje: 'Este dispensador ya tiene una configuración asignada.' });
+      }
     }
 
-    const configuracion = await Configuracion.findByIdAndUpdate(req.params.id, req.body, { new: true, runValidators: true }).populate('id_dispensador');
+    const configuracion = await Configuracion.findByIdAndUpdate(
+      req.params.id,
+      { horarios, cantidad_porcion, modo_manual, dispensador: dispensadorId },
+      { new: true, runValidators: true }
+    ).populate('dispensador');
+
     if (!configuracion) {
       return res.status(404).send();
     }
+
+    // Actualizar el dispensador con la nueva configuración
+    if (dispensadorId) {
+      await Dispensador.findByIdAndUpdate(dispensadorId, { configuracion: configuracion._id });
+    }
+
     res.status(200).send(configuracion);
   } catch (error) {
     res.status(400).send(error);
   }
 };
 
-// Eliminar una configuración por ID
 exports.deleteConfiguracion = async (req, res) => {
   try {
     const configuracion = await Configuracion.findByIdAndDelete(req.params.id);
     if (!configuracion) {
       return res.status(404).send();
+    }
+
+    // Eliminar la referencia de la configuración en el dispensador
+    if (configuracion.dispensador) {
+      await Dispensador.findByIdAndUpdate(configuracion.dispensador, { configuracion: null });
     }
 
     res.status(200).send(configuracion);

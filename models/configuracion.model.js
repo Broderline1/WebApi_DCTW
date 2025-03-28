@@ -2,7 +2,7 @@ const mongoose = require('mongoose');
 
 const configuracionSchema = new mongoose.Schema({
   horarios: {
-    type: [String],
+    type: [String], // Array de strings
     required: true,
   },
   cantidad_porcion: {
@@ -13,7 +13,7 @@ const configuracionSchema = new mongoose.Schema({
     type: Boolean,
     required: true,
   },
-  id_dispensador: {
+  dispensador: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'Dispensador',
     required: false,  // No es obligatorio

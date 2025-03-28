@@ -27,7 +27,7 @@ const configuracionController = require('../controllers/configuracion.controller
  *         modo_manual:
  *           type: boolean
  *           description: Indica si el modo manual está activado
- *         id_dispensador:
+ *         dispensador:
  *           type: string
  *           format: ObjectId
  *           description: ID del dispensador asociado (opcional)
@@ -52,6 +52,10 @@ const configuracionController = require('../controllers/configuracion.controller
  *               type: array
  *               items:
  *                 $ref: '#/components/schemas/Configuracion'
+ *       404:
+ *         description: No se encontraron configuraciones
+ *       500:
+ *         description: Error en el servidor
  */
 router.get('/', configuracionController.getConfiguraciones);
 
@@ -70,6 +74,8 @@ router.get('/', configuracionController.getConfiguraciones);
  *     responses:
  *       201:
  *         description: Configuración creada exitosamente
+ *       400:
+ *         description: Error en la solicitud
  *       500:
  *         description: Error en el servidor
  */
@@ -97,6 +103,8 @@ router.post('/', configuracionController.createConfiguracion);
  *         description: Configuración actualizada exitosamente
  *       404:
  *         description: Configuración no encontrada
+ *       400:
+ *         description: Error en la solicitud
  *       500:
  *         description: Error en el servidor
  */

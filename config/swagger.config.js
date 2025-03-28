@@ -12,10 +12,25 @@ const options = {
     servers: [
       {
         url: 'http://localhost:5000',
+        description: 'Servidor local',
+      },
+    ],
+    components: {
+      securitySchemes: {
+        bearerAuth: {
+          type: 'http',
+          scheme: 'bearer',
+          bearerFormat: 'JWT', // Indica que el token es un JWT
+        },
+      },
+    },
+    security: [
+      {
+        bearerAuth: [], // Aplica bearerAuth como seguridad global
       },
     ],
   },
-  apis: ['./routes/*.js'], // Ruta a tus archivos de rutas
+  apis: ['./routes/*.js'],
 };
 
 const swaggerSpec = swaggerJSDoc(options);

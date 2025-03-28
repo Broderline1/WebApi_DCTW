@@ -1,5 +1,5 @@
 const mongoose = require('mongoose');
-const bcrypt = require('bcrypt');
+const bcrypt = require('bcryptjs');
 
 const usuarioSchema = new mongoose.Schema({
   nombre: {
@@ -11,26 +11,33 @@ const usuarioSchema = new mongoose.Schema({
     type: String,
     required: true,
     unique: true,
-    match: /^[^\s@]+@[^\s@]+\.[^\s@]+$/, // Validación de correo
+    match: /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
   },
   telefono: {
     type: String,
-    required: true,
+    required: false,
   },
   contraseña: {
     type: String,
     required: true,
-    minlength: 6, // Exige una contraseña de al menos 6 caracteres
   },
-}, { timestamps: true });
+  dispensadores: [{
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'Dispensador',
+  }],
+  mascotas: [{
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'Mascota',
+  }]
+});
 
-// Middleware para encriptar contraseña antes de guardar
-usuarioSchema.pre('save', async function (next) {
+// Hash password before saving
+usuarioSchema.pre('save', async function(next) {
   if (!this.isModified('contraseña')) return next();
-  const salt = await bcrypt.genSalt(10);
-  this.contraseña = await bcrypt.hash(this.contraseña, salt);
+  console.log('Contraseña antes de encriptar:', this.contraseña); // Log para verificar la contraseña antes de encriptar
+  this.contraseña = await bcrypt.hash(this.contraseña, 12);
+  console.log('Contraseña después de encriptar:', this.contraseña); // Log para verificar la contraseña después de encriptar
   next();
 });
 
-const Usuario = mongoose.model('Usuario', usuarioSchema);
-module.exports = Usuario;
+module.exports = mongoose.model('Usuario', usuarioSchema);

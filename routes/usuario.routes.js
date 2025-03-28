@@ -18,17 +18,21 @@ const usuarioController = require('../controllers/usuario.controller');
  *       properties:
  *         nombre:
  *           type: string
- *           description: Nombre del usuario
  *         correo:
  *           type: string
  *           format: email
- *           description: Correo electrónico del usuario
  *         telefono:
  *           type: string
- *           description: Número de teléfono del usuario
  *         contraseña:
  *           type: string
- *           description: Contraseña del usuario (mínimo 6 caracteres)
+ *         dispensadores:
+ *           type: array
+ *           items:
+ *             type: string
+ *         mascotas:
+ *           type: array
+ *           items:
+ *             type: string
  *       required:
  *         - nombre
  *         - correo
@@ -42,6 +46,8 @@ const usuarioController = require('../controllers/usuario.controller');
  *   get:
  *     tags: [Usuarios]
  *     summary: Obtiene todos los usuarios
+ *     security:
+ *       - bearerAuth: []  # Requiere autenticación
  *     responses:
  *       200:
  *         description: Lista de usuarios
@@ -54,25 +60,34 @@ const usuarioController = require('../controllers/usuario.controller');
  */
 router.get('/', usuarioController.obtenerUsuarios);
 
+
 /**
  * @swagger
- * /api/usuarios:
- *   post:
+ * /api/usuarios/{id}:
+ *   get:
  *     tags: [Usuarios]
- *     summary: Crea un nuevo usuario
- *     requestBody:
- *       required: true
- *       content:
- *         application/json:
- *           schema:
- *             $ref: '#/components/schemas/Usuario'
+ *     summary: Obtiene un usuario por su ID con sus dispensadores y mascotas
+ *     security:
+ *       - bearerAuth: []  # Requiere autenticación
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
  *     responses:
- *       201:
- *         description: Usuario creado exitosamente
+ *       200:
+ *         description: Usuario encontrado
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Usuario'
+ *       404:
+ *         description: Usuario no encontrado
  *       500:
- *         description: Error en el servidor
+ *         description: Error del servidor
  */
-router.post('/', usuarioController.crearUsuario);
+router.get('/:id', usuarioController.obtenerUsuario);
 
 /**
  * @swagger
@@ -80,6 +95,8 @@ router.post('/', usuarioController.crearUsuario);
  *   put:
  *     tags: [Usuarios]
  *     summary: Actualiza un usuario existente
+ *     security:
+ *       - bearerAuth: []  # Requiere autenticación
  *     parameters:
  *       - name: id
  *         in: path
@@ -114,6 +131,8 @@ router.put('/:id', usuarioController.actualizarUsuario);
  *   delete:
  *     tags: [Usuarios]
  *     summary: Elimina un usuario
+ *     security:
+ *       - bearerAuth: []  # Requiere autenticación
  *     parameters:
  *       - name: id
  *         in: path
@@ -135,6 +154,8 @@ router.delete('/:id', usuarioController.eliminarUsuario);
  *   post:
  *     tags: [Usuarios]
  *     summary: Asigna una mascota a un usuario
+ *     security:
+ *       - bearerAuth: []  # Requiere autenticación
  *     parameters:
  *       - name: usuarioId
  *         in: path
@@ -160,6 +181,8 @@ router.post('/:usuarioId/asignar-mascota/:mascotaId', usuarioController.asignarM
  *   post:
  *     tags: [Usuarios]
  *     summary: Asigna un dispensador a un usuario
+ *     security:
+ *       - bearerAuth: []  # Requiere autenticación
  *     parameters:
  *       - name: usuarioId
  *         in: path
