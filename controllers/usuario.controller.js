@@ -83,19 +83,24 @@ exports.asignarMascotaAUsuario = async (req, res) => {
       return res.status(400).json({ mensaje: 'El usuario ya es el propietario de esta mascota' });
     }
 
-    // Asignar el propietario y guardar los cambios
+    // Asignar el propietario a la mascota
     mascota.propietario = usuarioId;
     await mascota.save();
 
-    // Devolver la respuesta con la mascota actualizada
-    res.status(200).json({ mensaje: 'Usuario asignado a la mascota', mascota });
+    // Agregar la mascota al campo `mascotas` del usuario si no está ya incluida
+    if (!usuario.mascotas.includes(mascotaId)) {
+      usuario.mascotas.push(mascotaId);
+      await usuario.save();
+    }
+
+    // Devolver la respuesta con el usuario actualizado
+    res.status(200).json({ mensaje: 'Mascota asignada al usuario', usuario });
   } catch (error) {
-    res.status(500).json({ mensaje: 'Error al asignar usuario', error: error.message });
+    res.status(500).json({ mensaje: 'Error al asignar mascota al usuario', error: error.message });
   }
 };
 
 // Asignar dispensador a un usuario
-
 exports.asignarDispensadorAUsuario = async (req, res) => {
   try {
     const { usuarioId, dispensadorId } = req.params;
@@ -118,14 +123,20 @@ exports.asignarDispensadorAUsuario = async (req, res) => {
       return res.status(400).json({ mensaje: 'El usuario ya está asignado a este dispensador' });
     }
 
-    // Asignar el usuario al dispensador y guardar los cambios
+    // Asignar el usuario al dispensador
     dispensador.usuario = usuarioId;
     await dispensador.save();
 
-    // Devolver la respuesta con el dispensador actualizado
-    res.status(200).json({ mensaje: 'Usuario asignado al dispensador', dispensador });
+    // Agregar el dispensador al campo `dispensadores` del usuario si no está ya incluido
+    if (!usuario.dispensadores.includes(dispensadorId)) {
+      usuario.dispensadores.push(dispensadorId);
+      await usuario.save();
+    }
+
+    // Devolver la respuesta con el usuario actualizado
+    res.status(200).json({ mensaje: 'Dispensador asignado al usuario', usuario });
   } catch (error) {
-    res.status(500).json({ mensaje: 'Error al asignar usuario', error: error.message });
+    res.status(500).json({ mensaje: 'Error al asignar dispensador al usuario', error: error.message });
   }
 };
 

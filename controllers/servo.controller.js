@@ -4,7 +4,7 @@ const { ReadlineParser } = require('@serialport/parser-readline');
 
 // Configuración del puerto serial
 const port = new SerialPort({
-  path: 'COM7', // Cambia esto al puerto correcto
+  path: 'COM4', // Cambia esto al puerto correcto
   baudRate: 9600,
 });
 

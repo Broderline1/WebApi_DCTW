@@ -12,7 +12,6 @@ const mascotaRoutes = require('./routes/mascota.routes');
 const dispensadorRoutes = require('./routes/dispensador.routes');
 const configuracionRouter = require('./routes/configuracion.routes');
 const authRoutes = require('./routes/auth.routes');
-const exampleRoutes = require('./routes/example.routes');
 //const servoRoutes = require('./routes/servo.routes'); // Agrega esta línea
 
 const app = express();
@@ -44,7 +43,6 @@ app.use('/api/mascotas', mascotaRoutes);
 app.use('/api/dispensadores', dispensadorRoutes);
 app.use('/api/configuraciones', configuracionRouter);
 app.use('/api/auth', authRoutes);
-app.use('/api/example', exampleRoutes);
 //app.use('/api/servo', servoRoutes); // Agrega esta línea
 // Documentación con Swagger
 swaggerDocs(app);
